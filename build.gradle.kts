@@ -13,3 +13,13 @@ tasks {
         gradleVersion = "8.11"
     }
 }
+
+kotlin {
+    jvmToolchain(17) // Ensure this matches the Java version
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17)) // Replace with your version
+    }
+}
