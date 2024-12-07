@@ -123,3 +123,6 @@ fun main() {
 // D
 // I
 // EJ
+
+//TODO
+//Day 4, part 1: Need to create the diagonals in the opposite direction

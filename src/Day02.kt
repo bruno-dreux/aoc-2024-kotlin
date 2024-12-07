@@ -99,8 +99,3 @@ fun main() {
     part2(input).println()
 
 }
-
-//TODO
-//Day 2, part 2: When it is unsafe, try all combinations of removing one element and see which ones become safe then (brute force)
-//Day 3, part 2: Split the strings on the dos and dont's, then run the regex only on the parts after the dos
-//Day 4, part 1: Need to create the diagonals in the opposite direction
