@@ -21,6 +21,8 @@ fun main() {
         val verticalStrings: MutableList<String> = mutableListOf()
         val diagonalStrings: MutableList<String> = mutableListOf()
         val diagonalStrings2: MutableList<String> = mutableListOf()
+        val diagonalStrings3: MutableList<String> = mutableListOf()
+        val diagonalStrings4: MutableList<String> = mutableListOf()
 
         for (line in input) {
             countHorizontal += countXMASinString(line) //Searching for horizontal occurrences (forward and reverse)
@@ -49,7 +51,7 @@ fun main() {
 //        println(verticalStrings)
 
         for (line in verticalStrings) {
-            countVertical += countXMASinString(line) //Searching for horizontal occurrences (forward and reverse)
+            countVertical += countXMASinString(line) //Searching for vertical occurrences (forward and reverse)
         }
 
         //Building the diagonal strings
@@ -82,15 +84,45 @@ fun main() {
             row++
         }
 
-//        println(diagonalStrings)
-//        println(diagonalStrings2)
+        //Starting at the top left element and moving left
+        var minRow = 0
+        var minCol = 0
+
+        while(minRow < input.size && minCol < input[0].length) {
+            var currentWord = ""
+            column = minCol
+            row = minRow
+
+            while(row < input.size && column >= 0){
+                currentWord = currentWord + input[row][column]
+                row++
+                column--
+            }
+            diagonalStrings3.add(currentWord)
+
+            if (minCol < input[0].length - 1) {
+                minCol ++
+            }
+            else{
+                minRow ++
+            }
+        }
+
+
+        println(diagonalStrings)
+        println(diagonalStrings2)
+        println(diagonalStrings3)
 
         for (line in diagonalStrings) {
-            countDiagonal += countXMASinString(line) //Searching for horizontal occurrences (forward and reverse)
+            countDiagonal += countXMASinString(line)
         }
 
         for (line in diagonalStrings2) {
-            countDiagonal += countXMASinString(line) //Searching for horizontal occurrences (forward and reverse)
+            countDiagonal += countXMASinString(line)
+        }
+
+        for (line in diagonalStrings3) {
+            countDiagonal += countXMASinString(line)
         }
 
         println(countHorizontal)
@@ -111,18 +143,9 @@ fun main() {
 //    part2(testInput).println()
 
     // Read the input from the `src/Day01.txt` file.
-//    val input = readInput("Day04")
-//    part1(input).println()
+    val input = readInput("Day04")
+    part1(input).println()
 //    part2(input).println()
 
 }
 
-// AFK
-// BGL
-// CH
-// D
-// I
-// EJ
-
-//TODO
-//Day 4, part 1: Need to create the diagonals in the opposite direction
