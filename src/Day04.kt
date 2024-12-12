@@ -134,18 +134,55 @@ fun main() {
     }
 
 
+    //Idea to solve part 2: go through the matrix selecting a "box" of 3x3 characters, and check if that box is a valid X-MAS. If so, add 1
+
+    fun testBoxForXMAS(box: List<String>): Int {
+        if (box[1][1] != 'A'){
+            return 0 //small optimization for speed
+        }
+        val diagonal1 = box[0][0].toString() + box[1][1] + box[2][2]
+        val diagonal2 = box[0][2].toString() + box[1][1] + box[2][0]
+
+        if(diagonal1 == "MAS" || diagonal1 == "SAM") {
+            if(diagonal2 == "MAS" || diagonal2 == "SAM") {
+                return 1
+            }
+        }
+        return 0
+    }
+
+    fun part2(input: List<String>): Int {
+        var cumulativeSum = 0
+        for (row in 0..input.size - 3) {
+            var rowSize = input[row].length
+            for (column in 0..rowSize - 3) {
+                val boxToCheck: MutableList<String> = mutableListOf()
+                for (i in 0..2) {
+                    boxToCheck.add(input[row+i][column].toString()+input[row+i][column+1]+input[row+i][column+2])
+                }
+                cumulativeSum += testBoxForXMAS(boxToCheck)
+
+            }
+        }
+
+
+        return cumulativeSum
+    }
+
+
+
 
 
 
     // Or read a large test input from the `src/Day01_test.txt` file:
     val testInput: List<String> = readInput("Day04_test")
     part1(testInput).println()
-//    part2(testInput).println()
+    part2(testInput).println()
 
     // Read the input from the `src/Day01.txt` file.
     val input = readInput("Day04")
     part1(input).println()
-//    part2(input).println()
+    part2(input).println()
 
 }
 
