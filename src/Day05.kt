@@ -120,7 +120,7 @@ fun main() {
                 val permutations = update.permute()
                 for (permutation in permutations) {
                     if (checkUpdate(permutation, rulesList) > 0) {
-                        cumulativeSum += checkUpdate(permutation, rulesList)
+                        cumulativeSum += checkUpdate(permutation, rulesList) //TODO: change the code to check the permutations as each one is generated, instead of returning them all
                         break
                     }
                 }
