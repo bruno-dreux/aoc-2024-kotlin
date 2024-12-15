@@ -185,12 +185,14 @@ fun main() {
                     println("List before permutation: $updateWithPermutations, $violation, ${updateWithPermutations[i]}")
                     updateWithPermutations = swapItemsInUpdate(updateWithPermutations, violation, updateWithPermutations[i])
                     println("List after permutation: $updateWithPermutations")
+                    return(checkUpdateWithPermutations(updateWithPermutations, rules))
                 }
                 for (violation in violation2) {
                     println("Violation 2")
                     println("List before permutation: $updateWithPermutations, $violation, ${updateWithPermutations[i]}")
                     updateWithPermutations = swapItemsInUpdate(updateWithPermutations, violation, updateWithPermutations[i])
                     println("List after permutation: $updateWithPermutations")
+                    return(checkUpdateWithPermutations(updateWithPermutations, rules))
                 }
             }
 
@@ -207,9 +209,7 @@ fun main() {
 //            println(afterRules)
 
         }
-
         return checkUpdate(updateWithPermutations, rules)
-
 
     }
 
@@ -228,39 +228,56 @@ fun main() {
         return cumulativeSum
     }
 
+//    fun part2(input: List<String>): Int {
+//        val inputPair = processInput(input)
+//        val rulesList: List<List<Int>> = inputPair.first
+//        val updatesList: List<List<Int>> = inputPair.second
+//        var cumulativeSum = 0
+//
+//        for (update in updatesList) {
+//            val applicableRulesList: MutableList<MutableList<Int>> = mutableListOf()
+//
+//            for (rule in rulesList) {
+//                if (update.contains(rule[0]) || update.contains(rule[1])) {
+//                    applicableRulesList.add(rule.toMutableList())
+//                }
+//            }
+//
+//            val globalOrder = topologicalSort(applicableRulesList)
+//            println(globalOrder)
+//
+//            if (checkUpdate(update, rulesList) == 0) { //invalid list
+//                val globalOrderIndexList: MutableList<Int> = mutableListOf()
+//                val orderedUpdates: MutableList<Int> = mutableListOf()
+//                for (element in update) {
+//                    globalOrderIndexList.add(globalOrder.indexOf(element))
+//                }
+//                globalOrderIndexList.sort()
+//                for (index in globalOrderIndexList) {
+//                    orderedUpdates.add(globalOrder[index])
+//                }
+//
+//                cumulativeSum +=  checkUpdate(orderedUpdates, rulesList)
+//            }
+//        }
+//
+//        return cumulativeSum
+//    }
+
     fun part2(input: List<String>): Int {
         val inputPair = processInput(input)
         val rulesList: List<List<Int>> = inputPair.first
         val updatesList: List<List<Int>> = inputPair.second
         var cumulativeSum = 0
 
+//        println(rulesList)
+//        println(updatesList)
+
         for (update in updatesList) {
-            val applicableRulesList: MutableList<MutableList<Int>> = mutableListOf()
-
-            for (rule in rulesList) {
-                if (update.contains(rule[0]) || update.contains(rule[1])) {
-                    applicableRulesList.add(rule.toMutableList())
-                }
-            }
-
-            val globalOrder = topologicalSort(applicableRulesList)
-            println(globalOrder)
-
-            if (checkUpdate(update, rulesList) == 0) { //invalid list
-                val globalOrderIndexList: MutableList<Int> = mutableListOf()
-                val orderedUpdates: MutableList<Int> = mutableListOf()
-                for (element in update) {
-                    globalOrderIndexList.add(globalOrder.indexOf(element))
-                }
-                globalOrderIndexList.sort()
-                for (index in globalOrderIndexList) {
-                    orderedUpdates.add(globalOrder[index])
-                }
-
-                cumulativeSum +=  checkUpdate(orderedUpdates, rulesList)
+            if (checkUpdate(update, rulesList) == 0) {
+                cumulativeSum += checkUpdateWithPermutations(update, rulesList)
             }
         }
-
         return cumulativeSum
     }
 
@@ -270,7 +287,7 @@ fun main() {
     // Or read a large test input from the `src/Day01_test.txt` file:
     val testInput = readInput("Day05_test")
 //    part1(testInput).println()
-    part2(testInput).println()
+//    part2(testInput).println()
 
 
 
