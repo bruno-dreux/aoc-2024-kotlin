@@ -27,6 +27,9 @@ fun main() {
                 else if (operatorsList[i] == "*") {
                     currentResult *= numbers[i+1].toULong()
                 }
+                else if (operatorsList[i] == "||") {
+                    currentResult = "$currentResult${numbers[i+1]}".toULong()
+                }
             }
             return currentResult == testValue
         }
@@ -48,30 +51,28 @@ fun main() {
 
     fun generateAllOperatorCombinations(
         operatorsLength: Int,
+        operatorTypes: List<String>,
         operatorCombinations: MutableList<MutableList<String>> = mutableListOf()
     ): MutableList<MutableList<String>> {
-        // Base case: If operatorsLength is 0, return the list of combinations
-        if (operatorsLength == 0) {
-            operatorCombinations.add(mutableListOf())
-            return operatorCombinations
+        // Start with a single empty combination
+        operatorCombinations.add(mutableListOf())
+
+        // For each level of operators to add
+        repeat(operatorsLength) {
+            val newCombinations = mutableListOf<MutableList<String>>()
+
+            // Extend each existing combination with each operator in operatorTypes
+            for (combination in operatorCombinations) {
+                for (operator in operatorTypes) {
+                    val newCombination = combination.toMutableList().apply { add(operator) }
+                    newCombinations.add(newCombination)
+                }
+            }
+
+            // Replace old combinations with the new ones
+            operatorCombinations.clear()
+            operatorCombinations.addAll(newCombinations)
         }
-
-        // Recursive step: Generate combinations for (operatorsLength - 1)
-        val smallerCombinations = generateAllOperatorCombinations(operatorsLength - 1, operatorCombinations)
-
-        // Extend each smaller combination with "+" and "*"
-        val newCombinations = mutableListOf<MutableList<String>>()
-        for (combination in smallerCombinations) {
-            val withPlus = mutableListOf<String>().apply { addAll(combination); add("+") }
-            val withAsterisk = mutableListOf<String>().apply { addAll(combination); add("*") }
-
-            newCombinations.add(withPlus)
-            newCombinations.add(withAsterisk)
-        }
-
-        // Replace the original combinations with the new ones
-        operatorCombinations.clear()
-        operatorCombinations.addAll(newCombinations)
 
         return operatorCombinations
     }
@@ -84,7 +85,7 @@ fun main() {
 
         for (line in puzzleInput) {
             val lineLength = line.numbers.size
-            val operatorCombinations = generateAllOperatorCombinations(lineLength - 1)
+            val operatorCombinations = generateAllOperatorCombinations(lineLength - 1,listOf("+","*"))
             for (combination in operatorCombinations) {
                 line.operatorsList = combination.toMutableList()
                 println(line)
@@ -100,19 +101,37 @@ fun main() {
     }
 
 
-    fun part2(input: List<String>): Int {
-        return 0
+    fun part2(input: List<String>): ULong {
+        val puzzleInput = processInput(input)
+        var totalCalibrationResult: ULong = 0.toULong()
+        println(puzzleInput)
+
+        for (line in puzzleInput) {
+            val lineLength = line.numbers.size
+            val operatorCombinations = generateAllOperatorCombinations(lineLength - 1,listOf("+","*","||"))
+            for (combination in operatorCombinations) {
+                line.operatorsList = combination.toMutableList()
+                println(line)
+                if(line.validateLine()) {
+                    totalCalibrationResult += line.testValue
+                    break
+                }
+            }
+        }
+
+
+        return totalCalibrationResult
     }
 
 
 
     // Or read a large test input from the `src/Day01_test.txt` file:
-    val testInput = readInput("Day07_test")
-    part1(testInput).println()
+//    val testInput = readInput("Day07_test")
+//    part1(testInput).println()
 //    part2(testInput).println()
 
     // Read the input from the `src/Day01.txt` file.
-//    val input = readInput("Day07")
+    val input = readInput("Day07")
 //    part1(input).println()
-//    part2(input).println()
+    part2(input).println()
 }
