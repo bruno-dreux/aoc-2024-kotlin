@@ -45,6 +45,49 @@ fun main() {
 
     }
 
+    fun createCompactedDiskWholeFile(uncompactedDisk: List<String>): List<String> {
+        val compactedDisk: MutableList<String> = uncompactedDisk.toMutableList()
+        var i: Int = compactedDisk.size - 1
+
+        while(i > 0) { //i goes through the list from right to left
+//            println("i = $i")
+            if(compactedDisk[i] != emptySpaceChar){
+                val currentFileIndex = compactedDisk[i]
+                var fileSize = 0
+                while (compactedDisk[i] == currentFileIndex && i>0) {
+                    fileSize++
+                    i--
+                }
+                i++ //went one position too far
+
+                for(j in 0 until i){ // j goes through the list from left to right
+//                    println("j = $j")
+                    if(compactedDisk[j] == emptySpaceChar){
+                        var lengthEmptySpace = 1
+                        while(j+lengthEmptySpace < compactedDisk.size && compactedDisk[j+lengthEmptySpace] == emptySpaceChar) {
+                            lengthEmptySpace++
+                        }
+                        if(lengthEmptySpace>=fileSize){ //Move the file
+                            for (k in j until j+fileSize){
+//                                println("Changing position $k to $currentFileIndex")
+                                compactedDisk[k] = currentFileIndex
+                            }
+                            for (k in i until i+fileSize){
+//                                println("Changing position $k to $emptySpaceChar")
+                                compactedDisk[k] = emptySpaceChar
+                            }
+                            break //File was already moved, can stop checking
+                        }
+                    }
+                }
+            }
+            i--
+        }
+
+        return compactedDisk.toList()
+
+    }
+
     fun calculateChecksum(compactedDisk: List<String>): ULong {
         var checksum = 0.toULong()
 
@@ -69,8 +112,15 @@ fun main() {
     }
 
 
-    fun part2(input: String): Int {
-        return 0
+    fun part2(input: String): ULong {
+        println(input)
+        val uncompactedDisk = createUncompactedDisk(input)
+        println(uncompactedDisk)
+
+        val compactedDisk = createCompactedDiskWholeFile(uncompactedDisk)
+        println(compactedDisk)
+
+        return calculateChecksum(compactedDisk)
     }
 
 
@@ -82,6 +132,6 @@ fun main() {
 
     // Read the input from the `src/Day09.txt` file.
     val input = readInput("Day09")
-    part1(input[0]).println()
-//    part2(input[0]).println()
+//    part1(input[0]).println()
+    part2(input[0]).println()
 }
