@@ -48,6 +48,16 @@ fun main() {
         return 0
     }
 
+    fun countDistinctSequencesFromZero(map: List<List<Int>>, row: Int, column: Int): Int {
+        if (map[row][column] == 0) {
+            var listOfEndingPointsPositions: MutableList<Pair<Int,Int>> = mutableListOf()
+            getEndingPoints(map, row, column, listOfEndingPointsPositions)
+
+            return listOfEndingPointsPositions.count()
+        }
+        return 0
+    }
+
     fun readMap(input: List<String>): List<List<Int>> {
         val map: MutableList<MutableList<Int>> = mutableListOf()
         for (row in input) {
@@ -76,7 +86,17 @@ fun main() {
 
 
     fun part2(input: List<String>): Int {
-        return 0
+        val map = readMap(input)
+
+        var sumOfTrailheads: Int = 0
+
+        for (row in map.indices) {
+            for (column in map[row].indices) {
+                sumOfTrailheads += countDistinctSequencesFromZero(map,row,column)
+            }
+        }
+
+        return sumOfTrailheads
     }
 
 
@@ -88,6 +108,6 @@ fun main() {
 
     // Read the input from the file.
     val input = readInput("Day10")
-    part1(input).println()
-//    part2(input).println()
+//    part1(input).println()
+    part2(input).println()
 }
