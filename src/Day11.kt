@@ -1,5 +1,6 @@
 fun main() {
-    val amountSteps = 25
+    val amountSteps = 50
+    val listSizeToBreakdown = 1000000
 
     fun readInput(input: List<String>): List<ULong> {
         var parts = input[0].split(Regex("\\s+")) // Split by one or more spaces
@@ -29,6 +30,30 @@ fun main() {
         return newList.toList()
     }
 
+    fun breakdownAndBlinkNSteps(list: List<ULong>, steps: Int, currentStep: Int): Int {
+//        println("Called function with current step $currentStep and list $list")
+        println("Current step: $currentStep")
+        var totalSize: Int = 0
+        var currentList: List<ULong> = list
+        if(currentStep >= steps) {
+            totalSize += currentList.size
+            return totalSize
+        }
+        if(currentList.size > listSizeToBreakdown) {
+            val leftList = currentList.subList(0, currentList.size/2)
+            val rightList = currentList.subList(currentList.size/2, currentList.size)
+            println("Breaking down in 2 lists")
+            totalSize += breakdownAndBlinkNSteps(leftList,steps,currentStep) + breakdownAndBlinkNSteps(rightList, steps,currentStep)
+        }
+        else {
+            currentList = blink(currentList)
+            totalSize += breakdownAndBlinkNSteps(currentList,steps,currentStep+1)
+//            println(currentList)
+        }
+
+        return totalSize
+    }
+
     fun part1(input: List<String>): Int {
         var list = readInput(input)
         println("Initial list: ")
@@ -46,7 +71,12 @@ fun main() {
 
 
     fun part2(input: List<String>): Int {
-        return 0
+        var list = readInput(input)
+        var totalSize = 0
+        println("Initial list: ")
+        println(list)
+
+        return breakdownAndBlinkNSteps(list, amountSteps,0)
     }
 
 
@@ -58,6 +88,6 @@ fun main() {
 
     // Read the input from the file.
     val input = readInput("Day11")
-    part1(input).println()
-//    part2(input).println()
+//    part1(input).println()
+    part2(input).println()
 }
