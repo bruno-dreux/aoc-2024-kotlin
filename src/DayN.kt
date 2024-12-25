@@ -12,12 +12,12 @@ fun main() {
 
 
 
-    // Or read a large test input from the `src/Day01_test.txt` file:
+    // Or read a large test input from the file:
     val testInput = readInput("Day07_test")
     part1(testInput).println()
 //    part2(testInput).println()
 
-    // Read the input from the `src/Day01.txt` file.
+    // Read the input from the file.
 //    val input = readInput("Day02")
 //    part1(input).println()
 //    part2(input).println()
