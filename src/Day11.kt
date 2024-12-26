@@ -1,6 +1,8 @@
 fun main() {
-    val amountSteps = 50
+    val amountSteps = 25
     val listSizeToBreakdown = 1000000
+    val amountStepsFirstPass = 39
+    val amountStepsSecondPass = 75 - amountStepsFirstPass
 
     fun readInput(input: List<String>): List<ULong> {
         var parts = input[0].split(Regex("\\s+")) // Split by one or more spaces
@@ -54,6 +56,17 @@ fun main() {
         return totalSize
     }
 
+    fun blinkNSteps(list: List<ULong>, steps: Int): List<ULong> {
+//        println("Blink $steps steps.")
+        var currentList: List<ULong> = list
+        for(i in 0 until steps) {
+//            println("Current step: $i")
+            currentList = blink(currentList)
+        }
+
+        return currentList
+    }
+
     fun part1(input: List<String>): Int {
         var list = readInput(input)
         println("Initial list: ")
@@ -70,13 +83,29 @@ fun main() {
     }
 
 
-    fun part2(input: List<String>): Int {
-        var list = readInput(input)
-        var totalSize = 0
+    fun part2(input: List<String>): ULong {
+        val list = readInput(input)
         println("Initial list: ")
         println(list)
 
-        return breakdownAndBlinkNSteps(list, amountSteps,0)
+        val listAfterFirstPass = blinkNSteps(list,amountStepsFirstPass)
+        val mapSecondPass: MutableMap<ULong, ULong> = mutableMapOf()
+        var cumulativeSum: ULong = 0.toULong()
+
+        for (element in listAfterFirstPass) {
+            if (mapSecondPass.containsKey(element)) {
+                cumulativeSum += mapSecondPass.getValue(element)
+            }
+            else{
+                println("Value $element not found in map. Blinking...")
+                val listSecondPassElement = blinkNSteps(listOf(element), amountStepsSecondPass)
+                mapSecondPass.put(element,listSecondPassElement.size.toULong())
+                cumulativeSum += listSecondPassElement.size.toULong()
+            }
+        }
+
+        return cumulativeSum
+
     }
 
 
@@ -90,4 +119,5 @@ fun main() {
     val input = readInput("Day11")
 //    part1(input).println()
     part2(input).println()
+
 }
