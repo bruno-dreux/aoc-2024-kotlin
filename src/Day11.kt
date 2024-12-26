@@ -1,5 +1,5 @@
 fun main() {
-    val amountSteps = 25
+    val amountSteps = 75
     val listSizeToBreakdown = 1000000
     val amountStepsFirstPass = 39
     val amountStepsSecondPass = 75 - amountStepsFirstPass
@@ -28,6 +28,27 @@ fun main() {
             else{
                 newList.add(element*2024.toULong())
             }
+        }
+        return newList.toList()
+    }
+
+    fun blinkOneElement(element: ULong): List<ULong> {
+        var newList: MutableList<ULong> = mutableListOf()
+//            println(element)
+        val elementString = element.toString()
+        if (element == 0.toULong()) { //case 0
+            newList.add(1.toULong())
+        }
+        else if (elementString.length %2 == 0) { //case even number of digits
+            val leftPart = elementString.substring(0, elementString.length/2)
+            val rightPart = elementString.substring(elementString.length/2, elementString.length)
+//                println("left part: $leftPart")
+//                println("right part: $rightPart")
+            newList.add(leftPart.toULong())
+            newList.add(rightPart.toULong())
+        }
+        else{
+            newList.add(element*2024.toULong())
         }
         return newList.toList()
     }
@@ -108,6 +129,38 @@ fun main() {
 
     }
 
+    fun part2efficient(input: List<String>): ULong {
+        val list = readInput(input)
+        println("Initial list: ")
+        println(list)
+
+        var map: MutableMap<ULong, ULong> = mutableMapOf()
+
+        for (element in list) {
+            map[element] = (map[element] ?: 0u) + 1u
+        }
+
+        println(map)
+
+        for (i in 1..amountSteps) {
+            println("Step $i")
+            var newMap: MutableMap<ULong, ULong> = mutableMapOf()
+
+            for (element in map.keys) {
+                val countElement = map[element]
+                val listBlinks = blinkOneElement(element)
+                for (blinkResult in listBlinks) {
+                    newMap[blinkResult] = (newMap[blinkResult] ?: 0u) + 1u*countElement!!
+                }
+            }
+            map = newMap
+
+        }
+
+        return map.values.sum()
+
+    }
+
 
 
     // Or read a large test input from the file:
@@ -118,6 +171,7 @@ fun main() {
     // Read the input from the file.
     val input = readInput("Day11")
 //    part1(input).println()
-    part2(input).println()
+//    part2(input).println()
+    part2efficient(input).println()
 
 }
