@@ -1,3 +1,5 @@
+import kotlin.math.abs
+
 fun main() {
 
     fun processInput(input: List<String>): MutableList<MutableList<Char>> {
@@ -81,15 +83,12 @@ fun main() {
             mapReached.add(newRow)
         }
 
-        //Idea: go through the map. For each value, if it was not reached yet, look for all similar elements and create a set with all points that
-        // have the similar value (and insert in the mapReached). Using that set, calculate the area and perimeter. The area will be simply the count of elements, and the perimeter will need to
-        // use the "calculatePerimeterForPosition" function above. Area and perimeter should be stored somewhere (in two lists) so they can be multiplied later.
-
         for (row in map.indices) {
             for (column in map[row].indices) {
                 if(mapReached[row][column] != 1) {
                     var setSimilarElements: MutableSet<Pair<Int,Int>> = mutableSetOf()
                     setSimilarElements = findSimilarElements(map,setSimilarElements,map[row][column],row,column)
+                    println(setSimilarElements)
 
                     var similarElementsPerimeter: Int = 0
                     for (element in setSimilarElements) {
@@ -108,18 +107,54 @@ fun main() {
 
 
     fun part2(input: List<String>): Int {
-        return 0
+        val map = processInput(input)
+        println(map)
+
+        val mapReached: MutableList<MutableList<Int>> = mutableListOf()  //Map with the positions already reached
+        val listPerimeters: MutableList<Int> = mutableListOf()
+        val listAreas: MutableList<Int> = mutableListOf()
+        val listPrices: MutableList<Int> = mutableListOf()
+
+        for (row in map.indices) {
+            val newRow: MutableList<Int> = mutableListOf()
+            for (column in map[row].indices) {
+                newRow.add(0)
+            }
+            mapReached.add(newRow)
+        }
+
+        for (row in map.indices) {
+            for (column in map[row].indices) {
+                if(mapReached[row][column] != 1) {
+                    var setSimilarElements: MutableSet<Pair<Int,Int>> = mutableSetOf()
+                    setSimilarElements = findSimilarElements(map,setSimilarElements,map[row][column],row,column)
+                    println("${map[row][column]}: $setSimilarElements")
+
+                    var similarElementsSides: Int = 4
+                    //TODO: Calculate the similar elements sides from the set
+
+                    for (element in setSimilarElements) {
+                        mapReached[element.first][element.second] = 1
+                    }
+                    listAreas.add(setSimilarElements.size)
+                    listPerimeters.add(similarElementsSides)
+                    listPrices.add(setSimilarElements.size*similarElementsSides)
+                }
+            }
+        }
+
+        return listPrices.sum()
     }
 
 
 
     // Or read a large test input from the file:
-//    val testInput = readInput("Day12_test")
+    val testInput = readInput("Day12_test")
 //    part1(testInput).println()
-//    part2(testInput).println()
+    part2(testInput).println()
 
     // Read the input from the file.
-    val input = readInput("Day12")
-    part1(input).println()
+//    val input = readInput("Day12")
+//    part1(input).println()
 //    part2(input).println()
 }
