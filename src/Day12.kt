@@ -37,13 +37,43 @@ fun main() {
         return sumOfEdges
     }
 
+    fun checkConditionsForSimilarity(map: MutableList<MutableList<Char>>, setSimilarElements: MutableSet<Pair<Int,Int>>, currentValue: Char, row: Int, column: Int): Boolean {
+        return isInBounds(map, row, column) && map[row][column] == currentValue && !setSimilarElements.contains(Pair(row,column))
+    }
+
+    fun findSimilarElements(map: MutableList<MutableList<Char>>, set: MutableSet<Pair<Int,Int>>, currentValue: Char, currentRow: Int, currentColumn: Int): MutableSet<Pair<Int,Int>> {
+        var setSimilarElements = set
+        setSimilarElements.add(Pair(currentRow,currentColumn))
+        if (checkConditionsForSimilarity(map,setSimilarElements,currentValue,currentRow,currentColumn-1)) { //Case LEFT
+            setSimilarElements.add(Pair(currentRow,currentColumn-1))
+            setSimilarElements = findSimilarElements(map,setSimilarElements, currentValue, currentRow,currentColumn-1)
+        }
+        if (checkConditionsForSimilarity(map,setSimilarElements,currentValue,currentRow-1,currentColumn)) { //Case UP
+            setSimilarElements.add(Pair(currentRow-1,currentColumn))
+            setSimilarElements = findSimilarElements(map,setSimilarElements, currentValue,currentRow-1,currentColumn)
+        }
+        if (checkConditionsForSimilarity(map,setSimilarElements,currentValue,currentRow,currentColumn+1)) { //Case RIGHT
+            setSimilarElements.add(Pair(currentRow,currentColumn+1))
+            setSimilarElements = findSimilarElements(map,setSimilarElements, currentValue, currentRow,currentColumn+1)
+        }
+        if (checkConditionsForSimilarity(map,setSimilarElements,currentValue,currentRow+1,currentColumn)) { //Case DOWN
+            setSimilarElements.add(Pair(currentRow+1,currentColumn))
+            setSimilarElements = findSimilarElements(map,setSimilarElements, currentValue, currentRow+1,currentColumn)
+        }
+
+        return setSimilarElements
+    }
+
     fun part1(input: List<String>): Int {
         val map = processInput(input)
         println(map)
 
-        val mapReached: MutableList<MutableList<Int>> = mutableListOf()
+        val mapReached: MutableList<MutableList<Int>> = mutableListOf()  //Map with the positions already reached
+        val listPerimeters: MutableList<Int> = mutableListOf()
+        val listAreas: MutableList<Int> = mutableListOf()
+        val listPrices: MutableList<Int> = mutableListOf()
 
-        for (row in map.indices) { //Map with the positions already reached
+        for (row in map.indices) {
             val newRow: MutableList<Int> = mutableListOf()
             for (column in map[row].indices) {
                 newRow.add(0)
@@ -55,7 +85,25 @@ fun main() {
         // have the similar value (and insert in the mapReached). Using that set, calculate the area and perimeter. The area will be simply the count of elements, and the perimeter will need to
         // use the "calculatePerimeterForPosition" function above. Area and perimeter should be stored somewhere (in two lists) so they can be multiplied later.
 
-        return 0
+        for (row in map.indices) {
+            for (column in map[row].indices) {
+                if(mapReached[row][column] != 1) {
+                    var setSimilarElements: MutableSet<Pair<Int,Int>> = mutableSetOf()
+                    setSimilarElements = findSimilarElements(map,setSimilarElements,map[row][column],row,column)
+
+                    var similarElementsPerimeter: Int = 0
+                    for (element in setSimilarElements) {
+                        mapReached[element.first][element.second] = 1
+                        similarElementsPerimeter += calculatePerimeterForPosition(map,element.first,element.second)
+                    }
+                    listAreas.add(setSimilarElements.size)
+                    listPerimeters.add(similarElementsPerimeter)
+                    listPrices.add(setSimilarElements.size*similarElementsPerimeter)
+                }
+            }
+        }
+
+        return listPrices.sum()
     }
 
 
@@ -66,12 +114,12 @@ fun main() {
 
 
     // Or read a large test input from the file:
-    val testInput = readInput("Day12_test")
-    part1(testInput).println()
+//    val testInput = readInput("Day12_test")
+//    part1(testInput).println()
 //    part2(testInput).println()
 
     // Read the input from the file.
-//    val input = readInput("Day12")
-//    part1(input).println()
+    val input = readInput("Day12")
+    part1(input).println()
 //    part2(input).println()
 }
