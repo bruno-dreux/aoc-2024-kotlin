@@ -105,26 +105,10 @@ fun main() {
         return listPrices.sum()
     }
 
-    fun calculateSides(setSimilarElements: MutableSet<Pair<Int,Int>>): Int {
-        if (setSimilarElements.isEmpty()) return 0
-        if (setSimilarElements.size == 1 || setSimilarElements.size == 2) return 4
-        var sides: Int = 4
-        for (currentElement in setSimilarElements) {
-            var isNewSide = 1
-            for (otherElement in setSimilarElements) {
-                if (abs(otherElement.first-currentElement.first) == 0 && abs(otherElement.second-currentElement.second) == 1) {
-                    isNewSide = 0
-                }
-                else if (abs(otherElement.first-currentElement.first) == 1 && abs(otherElement.second-currentElement.second) == 0) {
-                    isNewSide = 0
-                }
-            }
-            sides += isNewSide
-        }
-        return sides
-    }
+
 
     fun countCornersForPosition(map: MutableList<MutableList<Char>>,row: Int, column: Int): Int {
+        //Obs: this function is based on this insight: https://www.reddit.com/r/adventofcode/comments/1hcf16m/2024_day_12_everyone_must_be_hating_today_so_here/
         val currentValue = map[row][column]
         val neighbors: MutableMap<String,Int> = mutableMapOf()
         neighbors.put("left",0)
@@ -143,27 +127,69 @@ fun main() {
         if(isInBounds(map,row-1,column+1) && map[row-1][column+1] == currentValue) neighbors.put("topright",1)
         if(isInBounds(map,row+1,column-1) && map[row+1][column-1] == currentValue) neighbors.put("bottomleft",1)
         if(isInBounds(map,row+1,column+1) && map[row+1][column+1] == currentValue) neighbors.put("bottomright",1)
+        val sideNeighbors =
+            (neighbors["left"] ?: 0) +
+                    (neighbors["right"] ?: 0) +
+                    (neighbors["up"] ?: 0) +
+                    (neighbors["down"] ?: 0)
 
-        if(neighbors["left"] == 0 && neighbors["right"] == 0 && neighbors["up"] == 0 && neighbors["down"] == 0) { //No neighbors, 4 sides
+        if(sideNeighbors == 0) { //No neighbors, 4 corners
             return 4
         }
-        else if (neighbors.values.sum() == 1) { //One of the four side corners is 1
-            return 4
+        else if (sideNeighbors == 1) { //One of the four sides is 1
+            return 2
         }
-        else if (neighbors.values.sum() == 8) {
-            return 0
+        else if (sideNeighbors == 2) { //Two of the four sides are 1
+            if (neighbors["left"] == 1 && neighbors["right"] == 1) { //Opposing corners case 1
+                return 0
+            }
+            else if (neighbors["up"] == 1 && neighbors["down"] == 1) { //Opposing corners case 2
+                return 0
+            }
+            else if(neighbors["topleft"] == 1 && neighbors["up"] == 1 && neighbors["left"] == 1) {
+                return 1
+            }
+            else if(neighbors["topright"] == 1 && neighbors["up"] == 1 && neighbors["right"] == 1) {
+                return 1
+            }
+            else if(neighbors["bottomleft"] == 1 && neighbors["down"] == 1 && neighbors["left"] == 1) {
+                return 1
+            }
+            else if(neighbors["bottomright"] == 1 && neighbors["down"] == 1 && neighbors["right"] == 1) {
+                return 1
+            }
+            else {
+                return 2
+            }
         }
-        else if (neighbors["left"] == 1 && neighbors["right"] == 1 && neighbors["up"] == 0 && neighbors["down"] == 0) { //Opposing corners case 1
-            return 0
+        else if (sideNeighbors == 3) {
+            if (neighbors["up"] == 0) {
+                return -((neighbors["bottomleft"] ?: 0) + (neighbors["bottomright"] ?: 0) -2) //Small magic to return the right number of corners
+            }
+            else if (neighbors["down"] == 0) {
+                return -((neighbors["topleft"] ?: 0) + (neighbors["topright"] ?: 0) -2)
+            }
+            else if (neighbors["left"] == 0) {
+                return -((neighbors["topright"] ?: 0) + (neighbors["bottomright"] ?: 0) -2)
+            }
+            else if (neighbors["right"] == 0) {
+                return -((neighbors["topleft"] ?: 0) + (neighbors["bottomleft"] ?: 0) -2)
+            }
         }
-        else if (neighbors["left"] == 0 && neighbors["right"] == 0 && neighbors["up"] == 1 && neighbors["down"] == 1) { //Opposing corners case 2
-            return 0
+        else if (sideNeighbors == 4) {
+            return -((neighbors["topleft"] ?: 0) + (neighbors["bottomleft"] ?: 0) + (neighbors["bottomright"] ?: 0) + (neighbors["topright"] ?: 0) -4)
         }
-        //TODO: need to continue with other cases
-        else{ //This should never be reached
-            return -1
-        }
+        return -1 //This should never be reached
+    }
 
+    fun calculateSides(map: MutableList<MutableList<Char>>, setSimilarElements: MutableSet<Pair<Int,Int>>): Int {
+        if (setSimilarElements.isEmpty()) return 0
+        var sides: Int = 0
+        for (currentElement in setSimilarElements) {
+            sides += countCornersForPosition(map,currentElement.first,currentElement.second)
+//            println("Counting corners for position ${currentElement.first}, ${currentElement.second}: ${countCornersForPosition(map,currentElement.first,currentElement.second)}")
+        }
+        return sides
     }
 
 
@@ -191,7 +217,7 @@ fun main() {
                     setSimilarElements = findSimilarElements(map,setSimilarElements,map[row][column],row,column)
                     println("${map[row][column]}: $setSimilarElements")
 
-                    val similarElementsSides = calculateSides(setSimilarElements)
+                    val similarElementsSides = calculateSides(map,setSimilarElements)
 
                     for (element in setSimilarElements) {
                         mapReached[element.first][element.second] = 1
@@ -211,12 +237,12 @@ fun main() {
 
 
     // Or read a large test input from the file:
-    val testInput = readInput("Day12_test")
+//    val testInput = readInput("Day12_test")
 //    part1(testInput).println()
-    part2(testInput).println()
+//    part2(testInput).println()
 
     // Read the input from the file.
-//    val input = readInput("Day12")
+    val input = readInput("Day12")
 //    part1(input).println()
-//    part2(input).println()
+    part2(input).println()
 }
