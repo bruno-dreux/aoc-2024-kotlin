@@ -1,23 +1,38 @@
+import kotlin.math.roundToInt
+
 fun main() {
 
     class linearSystem(val ax: Int,val  bx: Int,val resultx: Int,val ay: Int,val by: Int,val resulty: Int) {
         var a: Double = -1.0
         var b: Double = -1.0
+        var aInt: Int = -1
+        var bInt: Int = -1
 
         override fun toString(): String {
             return "Linear system: $ax, $bx, $resultx, $ay, $by, $resulty"
         }
 
         fun solve() {
-            val numerator: Double = (resulty*ax).toDouble()/(resultx*ay)
+            val numerator: Double = resulty.toDouble() - (resultx*ay)/ax.toDouble()
             val denominator = by - (bx*ay).toDouble()/ax
             if(denominator != 0.0) {
                 b = numerator/denominator
                 a = (resultx-bx*b)/ax
+                aInt = a.roundToInt()
+                bInt = b.roundToInt()
+            }
+            else{
+                println("Denominator is 0")
+                println("$numerator, $denominator, $a, $b")
             }
             println("$numerator, $denominator, $a, $b")
         }
+
+        fun checkIntegerSolution(): Boolean{
+            return ax*aInt+bx*bInt == resultx && ay*aInt+by*bInt == resulty
+        }
     }
+
 
     fun processInput(input: List<String>): MutableList<linearSystem> {
         val regexAB = Regex("""X\+(\d+), Y\+(\d+)""")
@@ -55,13 +70,18 @@ fun main() {
 
     fun part1(input: List<String>): Int {
         var listSystems = processInput(input)
+        var tokensSum = 0
 
         for (system in listSystems) {
             println(system)
             system.solve()
-            println("A = ${system.a}, B = ${system.b}")
+            println("A = ${system.a}/${system.aInt}, B = ${system.b}/${system.bInt}")
+            if(system.checkIntegerSolution()) {
+                println("Valid solution to system, A: ${system.aInt}, B: ${system.bInt}")
+                tokensSum += system.aInt*3 + system.bInt
+            }
         }
-        return 0
+        return tokensSum
     }
 
 
@@ -72,12 +92,12 @@ fun main() {
 
 
     // Or read a large test input from the file:
-    val testInput = readInput("Day13_test")
-    part1(testInput).println()
+//    val testInput = readInput("Day13_test")
+//    part1(testInput).println()
 //    part2(testInput).println()
 
     // Read the input from the file.
-//    val input = readInput("Day13")
-//    part1(input).println()
+    val input = readInput("Day13")
+    part1(input).println()
 //    part2(input).println()
 }
