@@ -15,12 +15,12 @@ tasks {
 }
 
 kotlin {
-    jvmToolchain(17) // Ensure this matches the Java version
+    jvmToolchain(21) // Ensure this matches the Java version
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17)) // Replace with your version
+        languageVersion.set(JavaLanguageVersion.of(21)) // Replace with your version
     }
 }
 
